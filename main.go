@@ -10,6 +10,13 @@ import (
 	"strings"
 )
 
+var (
+	addr	string
+	port	int
+	baddr 	string
+	bport 	int
+)
+
 func isMagicPacket(packet []byte, macAddr *string) bool {
 	// fmt.Printf("%s\n", hex.EncodeToString(packet))
 	if len(packet) != 102 {
@@ -37,7 +44,7 @@ func sendPacket(addr string, port int, packet []byte) {
 	conn.Write(packet)
 }
 
-func onRecvPacket(packet []byte) {
+func onRecvPacket(caddr *IPAddr, packet []byte) {
 	var macAddr string
 	if isMagicPacket(packet, &macAddr) {
 		fmt.Printf("Magic %v ---> %s:%d ---> %s:%d (%s)\n", caddr, *addr, *port, *baddr, *bport, macAddr)
@@ -57,10 +64,10 @@ func main() {
 		defaultBPort = 9
 	}
 
-	var addr = flag.String("addr", defaultAddr, "Listen address")
-	var port = flag.Int("port", defaultPort, "Listen port")
-	var baddr = flag.String("baddr", defaultBAddr, "Broadcast address")
-	var bport = flag.Int("bport", defaultBPort, "Broadcast port")
+	addr = flag.String("addr", defaultAddr, "Listen address")
+	port = flag.Int("port", defaultPort, "Listen port")
+	baddr = flag.String("baddr", defaultBAddr, "Broadcast address")
+	bport = flag.Int("bport", defaultBPort, "Broadcast port")
 
 	flag.Parse()
 	listen, err := net.ListenPacket("udp", fmt.Sprintf("%s:%d", *addr, *port))
@@ -77,6 +84,6 @@ func main() {
 			fmt.Printf("Read udp failed, err: %v\n", err)
 			continue
 		}
-		go onRecvPacket(data[:n])
+		go onRecvPacket(caddr, data[:n])
 	}
 }
