@@ -11,7 +11,7 @@ import (
 )
 
 func isMagicPacket(packet []byte, macAddr *string) bool {
-	fmt.Printf("%s\n", hex.EncodeToString(packet))
+	// fmt.Printf("%s\n", hex.EncodeToString(packet))
 	if len(packet) != 102 {
 		return false
 	}
