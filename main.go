@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	addr	string
-	port	int
-	baddr 	string
-	bport 	int
+	addr	*string
+	port	*int
+	baddr 	*string
+	bport 	*int
 )
 
 func isMagicPacket(packet []byte, macAddr *string) bool {
