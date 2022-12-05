@@ -12,7 +12,7 @@ docker run -d \
     --name wol-forwarder \
     --restart=unless-stopped \
     --network=host \
-    -e BADDR=192.168.1.255 \
+    -e WOL_BADDR=192.168.1.255 \
     -p 1999:1999/udp \
     xiaozhuai/wol-forwarder:latest
 ```
