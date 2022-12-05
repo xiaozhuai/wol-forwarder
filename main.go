@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	addr	*string
-	port	*int
-	baddr 	*string
-	bport 	*int
+	addr  *string
+	port  *int
+	baddr *string
+	bport *int
 )
 
 func isMagicPacket(packet []byte, macAddr *string) bool {
@@ -44,10 +44,10 @@ func sendPacket(addr string, port int, packet []byte) {
 	conn.Write(packet)
 }
 
-func onRecvPacket(caddr *IPAddr, packet []byte) {
+func onReceivePacket(raddr net.Addr, packet []byte) {
 	var macAddr string
 	if isMagicPacket(packet, &macAddr) {
-		fmt.Printf("Magic %v ---> %s:%d ---> %s:%d (%s)\n", caddr, *addr, *port, *baddr, *bport, macAddr)
+		fmt.Printf("Magic %v ---> %s:%d ---> %s:%d (%s)\n", raddr, *addr, *port, *baddr, *bport, macAddr)
 		sendPacket(*baddr, *bport, packet)
 	}
 }
@@ -79,11 +79,11 @@ func main() {
 	defer listen.Close()
 	for {
 		var data [4096]byte
-		n, caddr, err := listen.ReadFrom(data)
+		n, raddr, err := listen.ReadFrom(data[:])
 		if err != nil {
 			fmt.Printf("Read udp failed, err: %v\n", err)
 			continue
 		}
-		go onRecvPacket(caddr, data[:n])
+		go onReceivePacket(raddr, data[:n])
 	}
 }
