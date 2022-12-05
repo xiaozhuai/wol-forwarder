@@ -37,6 +37,14 @@ func sendPacket(addr string, port int, packet []byte) {
 	conn.Write(packet)
 }
 
+func onRecvPacket(packet []byte) {
+	var macAddr string
+	if isMagicPacket(packet, &macAddr) {
+		fmt.Printf("Magic %v ---> %s:%d ---> %s:%d (%s)\n", caddr, *addr, *port, *baddr, *bport, macAddr)
+		sendPacket(*baddr, *bport, packet)
+	}
+}
+
 func main() {
 	defaultAddr := os.Getenv("WOL_ADDR")
 	defaultPort, err := strconv.Atoi(os.Getenv("WOL_PORT"))
@@ -60,25 +68,15 @@ func main() {
 		fmt.Printf("Listen failed, err: %v\n", err)
 		return
 	}
-	fmt.Printf("%s:%d ---> %s:%d\n", *addr, *port, *baddr, *bport)
+	fmt.Printf("Listen %s:%d ---> %s:%d\n", *addr, *port, *baddr, *bport)
 	defer listen.Close()
 	for {
 		var data [4096]byte
-		n, caddr, err := listen.ReadFrom(data[:]) // 接收数据
+		n, caddr, err := listen.ReadFrom(data)
 		if err != nil {
 			fmt.Printf("Read udp failed, err: %v\n", err)
 			continue
 		}
-		var macAddr string
-		if isMagicPacket(data[:n], &macAddr) {
-			fmt.Printf("%v ---> %s:%d ---> %s:%d (%s)\n", caddr, *addr, *port, *baddr, *bport, macAddr)
-			sendPacket(*baddr, *bport, data[:n])
-		}
-
-		// _, err = listen.WriteToUDP(data[:n], addr) // 发送数据
-		// if err != nil {
-		// 	fmt.Printf("Write to udp failed, err: %v\n", err)
-		// 	continue
-		// }
+		go onRecvPacket(data[:n])
 	}
 }
