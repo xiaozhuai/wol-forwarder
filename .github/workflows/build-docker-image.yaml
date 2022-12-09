@@ -1,6 +1,7 @@
 name: build-docker-image
 
 on:
+    workflow_dispatch:
     push:
         branches: [ master ]
     pull_request:
@@ -25,5 +26,13 @@ jobs:
                 uses: docker/build-push-action@v3
                 with:
                     platforms: linux/amd64,linux/386,linux/arm64/v8
-                    push: true
+                    push: ${{ github.event_name != 'pull_request' }}
                     tags: xiaozhuai/wol-forwarder:latest
+            -   name: Docker Hub Description
+                uses: peter-evans/dockerhub-description@v3
+                with:
+                    username: ${{ secrets.DOCKERHUB_USERNAME }}
+                    password: ${{ secrets.DOCKERHUB_PASSWORD }}
+                    repository: xiaozhuai/docker-wol-forwarder
+                    short-description: ${{ github.event.repository.description }}
+                    readme-filepath: ./README.md
