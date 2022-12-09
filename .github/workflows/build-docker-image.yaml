@@ -29,10 +29,12 @@ jobs:
                     push: ${{ github.event_name != 'pull_request' }}
                     tags: xiaozhuai/wol-forwarder:latest
             -   uses: actions/checkout@v3
+                if: ${{ github.event_name != 'pull_request' }}
             -   name: Docker Hub Description
                 uses: peter-evans/dockerhub-description@v3
+                if: ${{ github.event_name != 'pull_request' }}
                 with:
                     username: ${{ secrets.DOCKERHUB_USERNAME }}
                     password: ${{ secrets.DOCKERHUB_TOKEN }}
-                    repository: ${{ github.event.repository.name }}
+                    repository: xiaozhuai/wol-forwarder
                     short-description: ${{ github.event.repository.description }}
