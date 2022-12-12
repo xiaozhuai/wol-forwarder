@@ -15,4 +15,4 @@ ENV WOL_PORT=1999
 ENV WOL_BADDR=255.255.255.255
 ENV WOL_BPORT=9
 
-ENTRYPOINT /usr/sbin/wol-forwarder
+ENTRYPOINT ["/usr/sbin/wol-forwarder"]
