@@ -4,7 +4,7 @@ COPY . /code
 
 RUN set -ex \
     && cd /code \
-    && CGO_ENABLED=0 go build -o wol-forwarder .
+    && CGO_ENABLED=0 go build -ldflags "-s -w" -o wol-forwarder .
 
 FROM alpine:latest
 
